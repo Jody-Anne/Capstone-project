@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Website for Pottery</title>
+    <meta charset="utf-8" />
+    <!--Script to add in jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="Capstone.js"></script>
+    <link rel="stylesheet" href="Capstone.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"/>
+    <!--Scripts for JavaScript-->
+    <script type="text/javascript">
+      function clicked() {
+        alert('Order was successful reference number is ' + Math.floor(Math.random()*10)+1);
+      }
+
+      function setDeliveryOption(value) {
+        if (value === "delivery") {
+          $("#deliveryDetails").show(500);
+          $("#collectionDetails").hide(500);
+        }
+        else {
+          $("#deliveryDetails").hide(500);
+          $("#collectionDetails").show(500);
+          calculateCost(0)
+        }
+      }
+
+      function calculateCost(deliveryCharge) {
+        const totalCost = getTotalCost() + parseInt(deliveryCharge);
+        let valueOfCoupon = 0;
+        const promoAppliedString = localStorage.getItem("promoApplied");
+        if (promoAppliedString) {
+          const promoValueStore = JSON.parse(promoAppliedString);
+          if (promoValueStore.promoApplied) {
+            valueOfCoupon = totalCost * 20 / 100;
+          }
+        }
+        const vatCharge = (totalCost - valueOfCoupon) * 15 / 100;
+        const finalCost = totalCost - valueOfCoupon + vatCharge;
+        displayCostBreakdown(deliveryCharge, valueOfCoupon, vatCharge, finalCost)
+      }
+
+      function displayCostBreakdown(deliveryCharge, couponValue, vatCharge, finalCost) {
+        $("#couponValue").html('R' + couponValue);
+        $("#deliveryCharge").html('R' + deliveryCharge);
+        $("#vatCharge").html('R' + vatCharge);
+        $("#finalCost").html('R' + finalCost);
+      }
+
+      const getCartItems = () => {
+        const storedItemsString = localStorage.getItem("itemsInCart");
+        if (storedItemsString) {
+          return JSON.parse(storedItemsString).map((cartItem) => potteryItems[cartItem]);
+        }
+        return []
+      }
+
+      const getTotalCost = () => {
+        return getCartItems().reduce((sum, item) => sum + Number(item.price), 0);
+      }
+
+        $(document).ready(function () {
+            $("#fade-out").click(function () {
+                localStorage.clear();
+                $("#Cart").fadeOut("slow");
+                alert('Order was cancelled');
+            });
+
+          const populateCartView = () => {
+            const totalCost = getTotalCost();
+            getCartItems().forEach((item) => {
+              const card = `<div class="card">
+                  <img src="${item.image}" alt="">
+                    <div class="content">
+                      <div class="row">
+                        <div class="details">
+                          <span>${item.name}</span>
+                          <p>${item.description}</p>
+                        </div>
+                        <div class="price">R${item.price}</div>
+                      </div>
+                    </div>
+                </div>`;
+              // totalCost += Number(foundItem.price);
+              $("#cartContents").append(card);
+            })
+            $("#totalCost").html('R' + totalCost);
+          }
+
+          // Add the items the user has picked to the view
+          populateCartView();
+          calculateCost(0);
+
+          $("#deliveryDetails").hide();
+          $("#collectionDetails").hide();
+        })  // ---> End document ready function
+    </script>
+</head>
+
+<body>
+<!--Banner image for Crazy potters-->
+<section class="Bannerimage">
+    <header class="banner">
+        <h1 id="mainHeading" class="mainHeading"><i>Crazy Potters!</i></h1>
+        <div class="banner2">
+            <img src="./Pictures/quino-al-zjL2nfIoq3U-unsplash.jpg" alt="Pottery" class="Bannerimage1">
+        </div>
+    </header>
+</section>
+
+<!--Created a main navigation to go to cart-->
+<nav id="mainNav" class="mainNav">
+    <ul class="listLinks">
+        <li><a href="Capstone.html">Home</a></li>
+        <li><a href="Catalog.html">Catalog</a></li>
+        <li><a href="Cart.html"><div class="icon"><i class="fas fa-shopping-cart"></i></div></a></li>
+        <li><a href="Deliveries.html">Deliveries</a></li>
+        <li><a href="Sign-In.html">Sign-In</a></li>
+    </ul>
+</nav>
+    <div class="Cart-Container">
+        <div class="Header">
+            <h3 class="Heading">Shopping Cart</h3>
+        </div>
+        <div class="wrapper" id="Cart">
+            <div id="cartContents"></div>
+        </div>
+    </div>
+    <br>
+    <div class="prices">
+        <div class="amount"></div>
+        <input type="button" value="Cancel Order" id="fade-out" class="fade-out" />
+    </div>
+
+    <div>
+        <form>
+            <h2>Select Delivery Option</h2>
+            <br>
+            <input type="radio" id="delivery" name="deliveryOption" value="delivery" onchange="setDeliveryOption(value)">
+            <label for="delivery" class="delivery-label">Delivery to a residential address</label><br>
+            <input type="radio" id="collection" name="deliveryOption" value="collection" onchange="setDeliveryOption(value)">
+            <label for="collection" class="delivery-label">Collection from store</label><br>
+        </form>
+        <br>
+        <div id="collectionDetails">
+            <p>Good choice! There's no additional charge for this option, you'll be notified by email when your order is ready for collection.</p>
+        </div>
+        <div id="deliveryDetails">
+            <form>
+                <h2>Please select your preferred delivery option</h2>
+                <input type="radio" id="NextdayCharge" name="deliveryCharge" value="50" onchange="calculateCost(value)">
+                <label for="NextdayCharge" class="delivery-label">Next day delivery (R50)</label><br>
+                <input type="radio" id="FewDayCharge" name="deliveryCharge" value="25" onchange="calculateCost(value)">
+                <label for="FewDayCharge" class="delivery-label">1-3 day delivery (R25)</label><br>
+                <input type="radio" id="StandardCharge" name="deliveryCharge" value="10" onchange="calculateCost(value)">
+                <label for="StandardCharge" class="delivery-label">Standard delivery within the next 7 days (R10)</label><br>
+            </form>
+        </div>
+        <br>
+        <hr>
+        <br>
+    </div>
+    <div>
+        <div>
+            <h2>Cost of items in cart: <span id="totalCost">R</span></h2>
+            <h2>Delivery Charge: <span id="deliveryCharge">R</span></h2>
+            <h2>Coupon value: <span id="couponValue">R</span></h2>
+            <br>
+            <h2>VAT (15%): <span id="vatCharge">R</span></h2>
+            <h2>Final cost: <span id="finalCost">R</span></h2>
+        </div>
+        <input type="submit" onclick="clicked();" value="Confirm order" id="Confirm" class="Confirm"/>
+    </div>
+</body>

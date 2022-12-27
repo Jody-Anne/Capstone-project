@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Website for Pottery</title>
+    <meta charset="utf-8" />
+    <!--Script to add in jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="Capstone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="Capstone.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <!--Scripts for JavaScript-->
+    <script>
+        $(document).ready(function () {
+          // Change the colour of the background
+            setInterval(changecolors, 2000);
+
+            const storedItemsString = localStorage.getItem("itemsInCart");
+            let totalCost = 0;
+            if (storedItemsString) {
+              const savedCartItems = JSON.parse(storedItemsString);
+              savedCartItems.forEach((itemId) => {
+                  const foundItem = potteryItems[itemId];
+                  const card = `<div class="card">
+                  <img src="${foundItem.image}" alt="">
+                    <div class="content">
+                      <div class="row">
+                        <div class="details">
+                          <span>${foundItem.name}</span>
+                          <p>${foundItem.description}</p>
+                        </div>
+                        <div class="price">R${foundItem.price}</div>
+                      </div>
+                    </div>
+                </div>`;
+                totalCost += Number(foundItem.price);
+                $("#cartContents").append(card);
+              })
+              $("#totalCost").html('R' + totalCost);
+              alert(totalCost)
+            }   
+        }
+    );
+            
+            const counter = 0;
+
+            function changecolors() {
+                const colors = ["darkgrey", "lightgrey", "gainsboro", "rgb(252, 249, 249)"];
+
+                if (counter < colors.length) {
+                    $("body").css("background-color", colors[counter], 1000);
+                    // console.log("Counter: " + counter + " Colors Length: " + colors.length + " Colors: " +
+                    //     colors);
+                    counter++;
+                } else {
+                    counter = 0;
+                }
+                // console.log(colors.length);
+            }
+            changecolors();
+
+            
+    </script>
+</head>
+
+<body>
+
+<!--Banner image for Crazy potters-->
+<section class="Bannerimage">
+    <header class="banner">
+        <h1 id="mainHeading" class="mainHeading"><i>Crazy Potters!</i></h1>
+        <div class="banner2">
+            <img src="./Pictures/quino-al-zjL2nfIoq3U-unsplash.jpg" alt="Pottery" class="Bannerimage1">
+        </div>
+    </header>
+</section>
+
+<!--Created a main navigation to go to cart-->
+<nav id="mainNav" class="mainNav">
+    <ul class="listLinks">
+        <li><a href="Capstone.html">Home</a></li>
+        <li><a href="Catalog.html">Catalogue</a></li>
+        <li><a href="Cart.html">
+                <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+            </a></li>
+        <li><a href="Deliveries.html">Deliveries</a></li>
+        <li><a href="Sign-In.html">Sign-In</a></li>
+    </ul>
+</nav>
+<br><br>
+<div class="wrapper">
+    <a href="Cart.html">
+        <div class="cart-nav">
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Cart</span>
+            </div>
+            <div class="item-numb">0</div>
+        </div>
+    </a>
+    <br><br><br>
+
+    <div id="catalog"></div>
+</body>
